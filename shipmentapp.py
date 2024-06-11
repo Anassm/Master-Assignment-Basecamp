@@ -28,9 +28,9 @@ def fill_database(data: list):
             shipment["distance_naut"],
             shipment["duration_hours"],
             shipment["average_speed"],
-            shipment["origin"],
-            shipment["destination"],
-            shipment["vessel"],
+            shipment["origin"]["id"],
+            shipment["destination"]["id"],
+            shipment["vessel"]["imo"],
         )
         for shipment in data
     ]
@@ -52,10 +52,11 @@ def fill_database(data: list):
         )
         for shipment in data
     ]
+    vessel_insert_data = list(set(vessel_insert_data))
 
-    # Fill Port table
+    # Fill Port table with origin
     port_insert_query = "INSERT INTO ports (id, code, name, city, province, country) VALUES (?, ?, ?, ?, ?, ?)"
-    port_insert_data = [
+    port_insert_origin_data = [
         (
             port["id"],
             port["code"],
@@ -64,19 +65,33 @@ def fill_database(data: list):
             port["province"],
             port["country"],
         )
-        for port in {shipment["origin"] for shipment in data}.union(
-            {shipment["destination"] for shipment in data}
-        )
+        for port in (shipment["origin"] for shipment in data)
     ]
+    port_insert_origin_data = list(set(port_insert_origin_data))
+
+    # Fill Port table with destination
+    port_insert_destination_data = [
+        (
+            port["id"],
+            port["code"],
+            port["name"],
+            port["city"],
+            port["province"],
+            port["country"],
+        )
+        for port in (shipment["destination"] for shipment in data)
+    ]
+    port_total_data = port_insert_origin_data + port_insert_destination_data
+    port_total_data = list(set(port_total_data))
+
+    # Delete all data from tables for fresh start
+    cursor.execute("DELETE FROM shipments")
+    cursor.execute("DELETE FROM vessels")
+    cursor.execute("DELETE FROM ports")
 
     cursor.executemany(shipment_insert_query, shipment_insert_data)
     cursor.executemany(vessel_insert_query, vessel_insert_data)
-    
-    # TODO: apart loopen
-    # Execute origin
-    cursor.executemany(port_insert_query, port_insert_data)
-    # Execute destination
-    cursor.executemany(port_insert_query, port_insert_data)
+    cursor.executemany(port_insert_query, port_total_data)
 
     conn.commit()
     conn.close()
