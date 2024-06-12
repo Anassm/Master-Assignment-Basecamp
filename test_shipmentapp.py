@@ -3,12 +3,8 @@ from shipment import Shipment
 from port import Port
 from datetime import timedelta
 
-
-# Test to check if duration is converted correctly based on the given arguments
-# 1) %D:%H:%M
-# 2) %H:%M
-def test_convert_duration():
-    shipment = Shipment(
+# ! Commonly used shipment for testing. Do not change.
+shipment = Shipment(
         "78067E7F-D833-4312-A805-C1355F51F065",
         "01-01-2023",
         15649,
@@ -19,7 +15,12 @@ def test_convert_duration():
         "TRGEM",
         9913547,
     )
-    
+
+
+# Test to check if duration is converted correctly based on the given arguments
+# 1) %D:%H:%M
+# 2) %H:%M
+def test_convert_duration():
     time = timedelta(hours=864.595)
     
     days = time.days
@@ -37,18 +38,6 @@ def test_convert_duration():
 # 5) YD = Yards
 # 6) ValueError check
 def test_convert_distance():
-    shipment = Shipment(
-        "78067E7F-D833-4312-A805-C1355F51F065",
-        "01-01-2023",
-        15649,
-        5879.249,
-        864.595,
-        6.8,
-        "MYTPP",
-        "TRGEM",
-        9913547,
-    )
-    
     assert shipment.convert_distance("NM") == round(5879.249, 6)
     assert shipment.convert_distance("M") == round(5879.249 * 1852, 6)
     assert shipment.convert_distance("KM") == round(5879.249 * 1.852, 6)
@@ -64,18 +53,6 @@ def test_convert_distance():
 # 3) Kph = Kilometers per hour
 # 4) ValueError check
 def test_convert_speed():
-    shipment = Shipment(
-        "78067E7F-D833-4312-A805-C1355F51F065",
-        "01-01-2023",
-        15649,
-        5879.249,
-        864.595,
-        6.8,
-        "MYTPP",
-        "TRGEM",
-        9913547,
-    )
-    
     assert shipment.convert_speed("Knts") == round(6.8, 6)
     assert shipment.convert_speed("Mph") == round(6.8 * 1.15078, 6)
     assert shipment.convert_speed("Kmph") == round(6.8 * 1.852, 6)
@@ -102,17 +79,6 @@ def test_get_fuel_consupmtion():
 
 # Test to check if the fuel costs are calculated correctly based on the price per liter
 def test_calculate_fuel_costs():
-    shipment = Shipment(
-        "78067E7F-D833-4312-A805-C1355F51F065",
-        "01-01-2023",
-        15649,
-        5879.249,
-        864.595,
-        6.8,
-        "MYTPP",
-        "TRGEM",
-        9913547,
-    )
     vessel = Vessel(
         9913547,
         477736400,
@@ -135,18 +101,6 @@ def test_calculate_fuel_costs():
 # 2) keys check
 # 3) values check
 def test_get_ports():
-    shipment = Shipment(
-        "78067E7F-D833-4312-A805-C1355F51F065",
-        "01-01-2023",
-        15649,
-        5879.249,
-        864.595,
-        6.8,
-        "MYTPP",
-        "TRGEM",
-        9913547,
-    )
-    
     assert len(shipment.get_ports()) == 2
     assert shipment.get_ports().keys() == {"origin", "destination"} 
     assert str(shipment.get_ports()) == str({
