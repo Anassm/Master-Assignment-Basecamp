@@ -1,14 +1,33 @@
 from vessel import Vessel
 from shipment import Shipment
 from port import Port
+from datetime import timedelta
 
 
 # Test to check if duration is converted correctly based on the given arguments
 # 1) %D:%H:%M
 # 2) %H:%M
 def test_convert_duration():
-    raise NotImplemented()
-
+    shipment = Shipment(
+        "78067E7F-D833-4312-A805-C1355F51F065",
+        "01-01-2023",
+        15649,
+        5879.249,
+        864.595,
+        6.8,
+        "MYTPP",
+        "TRGEM",
+        9913547,
+    )
+    
+    time = timedelta(hours=864.595)
+    
+    days = time.days
+    hours = time.seconds // 3600
+    minutes = (time.seconds // 60) % 60
+    
+    assert shipment.convert_duration("%D:%H:%M") == f"{days:02}:{hours:02}:{minutes:02}"
+    assert shipment.convert_duration("%H:%M") == f"{hours:02}:{minutes:02}"
 
 # Test to check if distance is converted correctly based on the given arguments
 # 1) NM = Nautical Meters
@@ -18,7 +37,25 @@ def test_convert_duration():
 # 5) YD = Yards
 # 6) ValueError check
 def test_convert_distance():
-    raise NotImplemented()
+    shipment = Shipment(
+        "78067E7F-D833-4312-A805-C1355F51F065",
+        "01-01-2023",
+        15649,
+        5879.249,
+        864.595,
+        6.8,
+        "MYTPP",
+        "TRGEM",
+        9913547,
+    )
+    
+    assert shipment.convert_distance("NM") == round(5879.249, 6)
+    assert shipment.convert_distance("M") == round(5879.249 * 1852, 6)
+    assert shipment.convert_distance("KM") == round(5879.249 * 1.852, 6)
+    assert shipment.convert_distance("MI") == round(5879.249 * 1.15078, 6)
+    assert shipment.convert_distance("YD") == round(5879.249 * 2025.372, 6)
+    assert shipment.convert_distance("CM") == ValueError
+    
 
 
 # Test to check if speed is converted correctly based on the given arguments
@@ -27,17 +64,70 @@ def test_convert_distance():
 # 3) Kph = Kilometers per hour
 # 4) ValueError check
 def test_convert_speed():
-    raise NotImplemented()
+    shipment = Shipment(
+        "78067E7F-D833-4312-A805-C1355F51F065",
+        "01-01-2023",
+        15649,
+        5879.249,
+        864.595,
+        6.8,
+        "MYTPP",
+        "TRGEM",
+        9913547,
+    )
+    
+    assert shipment.convert_speed("Knts") == round(6.8, 6)
+    assert shipment.convert_speed("Mph") == round(6.8 * 1.15078, 6)
+    assert shipment.convert_speed("Kmph") == round(6.8 * 1.852, 6)
+    assert shipment.convert_speed("Bpm") == ValueError
 
 
 # Test to check if the fuel consumption is calculated correctly based on the distance
 def test_get_fuel_consupmtion():
-    raise NotImplemented()
+    vessel = Vessel(
+        1034034,
+        None,
+        "GREAT WALL 17",
+        "Tanzania",
+        "Deck Cargo Ship",
+        2023,
+        1978,
+        2373,
+        84,
+        19,
+    )
+
+    assert vessel.get_fuel_consumption(4120.326) == round(0.4 * (1978 / 2373) * 4120.326, 5)
 
 
 # Test to check if the fuel costs are calculated correctly based on the price per liter
 def test_calculate_fuel_costs():
-    raise NotImplemented()
+    shipment = Shipment(
+        "78067E7F-D833-4312-A805-C1355F51F065",
+        "01-01-2023",
+        15649,
+        5879.249,
+        864.595,
+        6.8,
+        "MYTPP",
+        "TRGEM",
+        9913547,
+    )
+    vessel = Vessel(
+        9913547,
+        477736400,
+        "TIGER LONGKOU",
+        "Hong Kong",
+        "Deck Cargo Ship",
+        2022,
+        23040,
+        26200,
+        192,
+        37,
+    )
+    
+    fuel_consumption = vessel.get_fuel_consumption(5879.249)
+    assert shipment.calculate_fuel_costs(4.5, vessel) == round(864.595 * fuel_consumption * 4.5, 3)
 
 
 # Test to check if the returned ports are correct
@@ -45,12 +135,43 @@ def test_calculate_fuel_costs():
 # 2) keys check
 # 3) values check
 def test_get_ports():
-    raise NotImplemented()
+    shipment = Shipment(
+        "78067E7F-D833-4312-A805-C1355F51F065",
+        "01-01-2023",
+        15649,
+        5879.249,
+        864.595,
+        6.8,
+        "MYTPP",
+        "TRGEM",
+        9913547,
+    )
+    
+    assert len(shipment.get_ports()) == 2
+    assert shipment.get_ports().keys() == {"origin", "destination"} 
+    assert str(shipment.get_ports()) == str({
+        "origin": Port(
+            "MYTPP",
+            55750,
+            "Tanjung Pelepas",
+            "Tanjung Pelepas",
+            "Johor",
+            "Malaysia"
+        ),
+        "destination": Port(
+            "TRGEM",
+            48947,
+            "Gemlik",
+            "Gemlik",
+            "Bursa",
+            "Turkey"
+        )
+    })
 
 
 # Test if the returned shipments contain the required shipment(s)
 def test_get_shipments_port():
-    port = Port("NZWLG", 61447, "Wellington" "Wellington" "Wellington" "New Zealand")
+    port = Port("NZWLG", 61447, "Wellington", "Wellington", "Wellington", "New Zealand")
 
     assert str(port.get_shipments()) == str(
         (
@@ -76,8 +197,8 @@ def test_get_shipments_port():
                 "CLPTI",
                 9863833,
             ),
-        )
     )
+)
 
 
 def test_get_shipments_vessel():

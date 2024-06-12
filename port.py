@@ -8,6 +8,11 @@ class Port:
     ) -> None:
 
         self.id = id
+        self.code = code
+        self.name = name
+        self.city = city
+        self.province = province
+        self.country = country
 
     # Representation method
     # This will format the output in the correct order
