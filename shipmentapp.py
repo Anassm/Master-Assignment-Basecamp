@@ -98,9 +98,9 @@ def fill_database(data: list):
 
 
 def main():
-    data = get_json_data(os.path.join(sys.path[0], "shipments.json"))
+    json_data = get_json_data(os.path.join(sys.path[0], "shipments.json"))
 
-    fill_database(data)
+    fill_database(json_data)
 
 
 if __name__ == "__main__":

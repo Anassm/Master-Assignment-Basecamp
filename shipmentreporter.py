@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+import sqlite3
 
 from vessel import Vessel
 from port import Port
@@ -11,11 +12,29 @@ from datetime import date
 class Reporter:
     # How many vessels are there? -> int
     def total_amount_of_vessels(self) -> int:
-        raise NotImplemented()
+        conn = sqlite3.connect("shipments.db")
+        cursor = conn.cursor()
+        query = "SELECT COUNT(*) FROM vessels"
+
+        cursor.execute(query)
+        amount_of_vessels = cursor.fetchone()[0]
+
+        conn.close()
+        return amount_of_vessels
 
     # What is the longest shipment distance? -> Shipment
     def longest_shipment(self) -> Shipment:
-        raise NotImplemented()
+        conn = sqlite3.connect("shipments.db")
+        cursor = conn.cursor()
+        query = "SELECT * FROM shipments ORDER BY distance_naut DESC LIMIT 1"
+
+        cursor.execute(query)
+        longest_shipment = cursor.fetchone()
+
+        print(longest_shipment)
+
+        conn.close()
+        return None
 
     # What is the longest and shortest vessel? -> tuple[Vessel, Vessel]
     def longest_and_shortest_vessels(self) -> tuple[Vessel, Vessel]:
@@ -50,7 +69,9 @@ class Reporter:
     # otherwise it should just return the value as tuple(Vessels, ...)
     # CSV example (this are also the headers):
     #   imo, mmsi, name, country, type, build, gross, netto, length, beam
-    def vessels_that_docked_port_between(self, port: Port, start: date, end: date, to_csv: bool = False) -> tuple[Vessel, ...]:
+    def vessels_that_docked_port_between(
+        self, port: Port, start: date, end: date, to_csv: bool = False
+    ) -> tuple[Vessel, ...]:
         raise NotImplemented()
 
     # Which ports are located in country X? ->tuple[Port, ...]
@@ -68,5 +89,12 @@ class Reporter:
     # otherwise it should just return the value as tuple(Vessel, ...)
     # CSV example (this are also the headers):
     #   imo, mmsi, name, country, type, build, gross, netto, length, beam
-    def vessels_from_country(self, country: str, to_csv: bool = False) -> tuple[Vessel, ...]:
+    def vessels_from_country(
+        self, country: str, to_csv: bool = False
+    ) -> tuple[Vessel, ...]:
         raise NotImplemented()
+
+
+reporter = Reporter()
+
+reporter.longest_shipment()

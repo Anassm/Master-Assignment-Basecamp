@@ -41,31 +41,26 @@ class Shipment:
         self,
     ) -> {
         "origin": Port,
-        "destination": Port, # ? Double check if expected output is correct
-    }: 
+        "destination": Port,  # ? Double check if expected output is correct
+    }:
         conn = sqlite3.connect("shipments.db")
         cursor = conn.cursor()
-        
+
         shipment_query = "SELECT * FROM shipments WHERE id = ?"
         ports_query = "SELECT * FROM ports WHERE id = ?"
         cursor.execute(shipment_query, (self.id,))
-        
-        data = cursor.fetchone()
-        
-        cursor.execute(ports_query, (data[6],))
+
+        shipment_data = cursor.fetchone()
+
+        cursor.execute(ports_query, (shipment_data[6],))
         origin = cursor.fetchone()
-        
-        cursor.execute(ports_query, (data[7],))
+
+        cursor.execute(ports_query, (shipment_data[7],))
         destination = cursor.fetchone()
 
         ports = {
             "origin": Port(
-                origin[0],
-                origin[1],
-                origin[2],
-                origin[3],
-                origin[4],
-                origin[5]
+                origin[0], origin[1], origin[2], origin[3], origin[4], origin[5]
             ),
             "destination": Port(
                 destination[0],
@@ -73,43 +68,43 @@ class Shipment:
                 destination[2],
                 destination[3],
                 destination[4],
-                destination[5]
-            )
+                destination[5],
+            ),
         }
-        
+
         conn.close()
         return ports
-        
+
     def get_vessel(self) -> Vessel:
         conn = sqlite3.connect("shipments.db")
         cursor = conn.cursor()
-        
+
         query = "SELECT * FROM vessels WHERE imo = ?"
         cursor.execute(query, (self.id,))
-        data = cursor.fetchall()
-        data = Vessel(
-            data[0],
-            data[1],
-            data[2],
-            data[3],
-            data[4],
-            data[5],
-            data[6],
-            data[7],
-            data[8],
-            data[9],  
+        vessel_data = cursor.fetchall()
+        vessel_data = Vessel(
+            vessel_data[0],
+            vessel_data[1],
+            vessel_data[2],
+            vessel_data[3],
+            vessel_data[4],
+            vessel_data[5],
+            vessel_data[6],
+            vessel_data[7],
+            vessel_data[8],
+            vessel_data[9],
         )
-        
+
         conn.close()
-        return data
+        return vessel_data
 
     def calculate_fuel_costs(self, price_per_liter: float, vessel: Vessel) -> float:
         fuel_consumption = vessel.get_fuel_consumption(self.distance_naut)
         fuel_costs = self.duration_hours * fuel_consumption * price_per_liter
-        
+
         return round(fuel_costs, 3)
 
-    def convert_speed(self, to_format: str) -> float: 
+    def convert_speed(self, to_format: str) -> float:
         if to_format == "Knts":
             return round(self.average_speed, 6)
         elif to_format == "Mph":
@@ -117,29 +112,32 @@ class Shipment:
         elif to_format == "Kmph":
             return round(self.average_speed * 1.852, 6)
         else:
-            return ValueError
+            raise ValueError
 
     def convert_distance(self, to_format: str) -> float:
-            if to_format == "NM":
-                return round(self.distance_naut, 6)
-            elif to_format == "M":
-                return round(self.distance_naut * 1852, 6)
-            elif to_format == "KM":
-                return round(self.distance_naut * 1.852, 6)
-            elif to_format == "MI":
-                return round(self.distance_naut * 1.15078, 6)
-            elif to_format == "YD":
-                return round(self.distance_naut * 2025.372, 6)
-            else:
-                return ValueError
+        if to_format == "NM":
+            return round(self.distance_naut, 6)
+        elif to_format == "M":
+            return round(self.distance_naut * 1852, 6)
+        elif to_format == "KM":
+            return round(self.distance_naut * 1.852, 6)
+        elif to_format == "MI":
+            return round(self.distance_naut * 1.15078, 6)
+        elif to_format == "YD":
+            return round(self.distance_naut * 2025.372, 6)
+        else:
+            raise ValueError("Invalid format")
+
+    # Convert duration(to_format: str)(returns converted duration in the provided datetime format)
+    # (example: %D%H will return days:hours, options are: %D = days, %H = hours, %M = minutes)
 
     def convert_duration(self, to_format: str) -> str:
         time = timedelta(hours=self.duration_hours)
-        
-        days = time.days
-        hours = time.seconds // 3600
+
+        days = time.day
+        hours = time.seconds // 3600 % 24
         minutes = (time.seconds // 60) % 60
-            
+
         if to_format == "%D":
             return f"{days:02}"
         elif to_format == "%D:%H":
@@ -152,3 +150,18 @@ class Shipment:
             return f"{hours:02}:{minutes:02}"
         elif to_format == "%M":
             return f"{minutes:02}"
+
+
+shipment = Shipment(
+    "78067E7F-D833-4312-A805-C1355F51F065",
+    "01-01-2023",
+    15649,
+    5879.249,
+    864.595,
+    6.8,
+    "MYTPP",
+    "TRGEM",
+    9913547,
+)
+
+print(shipment.convert_duration("%D:%H:%M"))

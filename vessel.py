@@ -38,28 +38,28 @@ class Vessel:
 
     def get_fuel_consumption(self, distance: float) -> float:
         ship_types = {
-                        'Aggregates Carrier': 0.4,
-                        'Bulk Carrier': 0.35,
-                        'Bulk/Oil Carrier': 0.35,
-                        'Cement Carrier': 0.4,
-                        'Container Ship': 0.3,
-                        'Deck Cargo Ship': 0.4,
-                        'General Cargo Ship': 0.4,
-                        'Heavy Load Carrier': 0.4,
-                        'Landing Craft': 0.4,
-                        'Nuclear Fuel Carrier': 0.35,
-                        'Palletised Cargo Ship': 0.4,
-                        'Passenger/Container Ship': 0.3,
-                        'Ro-Ro Cargo Ship': 0.4,
-                        'Self Discharging Bulk Carrier': 0.35,
-                        'Vehicles Carrier': 0.35,
-                        'Wood Chips Carrier': 0.4
-                      }
+            "Aggregates Carrier": 0.4,
+            "Bulk Carrier": 0.35,
+            "Bulk/Oil Carrier": 0.35,
+            "Cement Carrier": 0.4,
+            "Container Ship": 0.3,
+            "Deck Cargo Ship": 0.4,
+            "General Cargo Ship": 0.4,
+            "Heavy Load Carrier": 0.4,
+            "Landing Craft": 0.4,
+            "Nuclear Fuel Carrier": 0.35,
+            "Palletised Cargo Ship": 0.4,
+            "Passenger/Container Ship": 0.3,
+            "Ro-Ro Cargo Ship": 0.4,
+            "Self Discharging Bulk Carrier": 0.35,
+            "Vehicles Carrier": 0.35,
+            "Wood Chips Carrier": 0.4,
+        }
         if self.type in ship_types:
             efficiency = ship_types[self.type]
-            
+
         consumption = efficiency * (self.gross / self.netto) * distance
-        
+
         return round(consumption, 5)
 
     # Return float number based on the calculations from master assignment pdf
@@ -67,7 +67,7 @@ class Vessel:
     # ? Ask teacher if it needs to return a tuple or a list -> onduidelijkheid van docent, zegt dat het niet uitmaakt.
     def get_shipments(
         self,
-    ) -> tuple():  # ? Does Shipment need to be expected in output too?
+    ) -> tuple:
         from shipment import Shipment
 
         conn = sqlite3.connect("shipments.db")

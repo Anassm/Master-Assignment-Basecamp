@@ -25,7 +25,7 @@ class Port:
 
     def get_shipments(
         self,
-    ) -> tuple():  # ? Does Shipment need to be expected in output too?
+    ) -> tuple:  # ? Does Shipment need to be expected in output too?
         from shipment import Shipment
 
         conn = sqlite3.connect("shipments.db")
