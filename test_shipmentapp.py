@@ -1,7 +1,6 @@
 from vessel import Vessel
 from shipment import Shipment
 from port import Port
-from datetime import timedelta
 import pytest
 
 # ! Commonly used shipment for testing. Do not change.

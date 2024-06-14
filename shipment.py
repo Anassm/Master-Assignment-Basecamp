@@ -39,10 +39,7 @@ class Shipment:
 
     def get_ports(
         self,
-    ) -> {
-        "origin": Port,
-        "destination": Port,  # ? Double check if expected output is correct
-    }:
+    ):
         conn = sqlite3.connect("shipments.db")
         cursor = conn.cursor()
 
@@ -134,7 +131,7 @@ class Shipment:
     def convert_duration(self, to_format: str) -> str:
         time = timedelta(hours=self.duration_hours)
 
-        days = time.day
+        days = time.days
         hours = time.seconds // 3600 % 24
         minutes = (time.seconds // 60) % 60
 
@@ -150,18 +147,3 @@ class Shipment:
             return f"{hours:02}:{minutes:02}"
         elif to_format == "%M":
             return f"{minutes:02}"
-
-
-shipment = Shipment(
-    "78067E7F-D833-4312-A805-C1355F51F065",
-    "01-01-2023",
-    15649,
-    5879.249,
-    864.595,
-    6.8,
-    "MYTPP",
-    "TRGEM",
-    9913547,
-)
-
-print(shipment.convert_duration("%D:%H:%M"))

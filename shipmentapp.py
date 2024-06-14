@@ -19,11 +19,19 @@ def fill_database(data: list):
     cursor = conn.cursor()
 
     # Fill Shipment table
-    shipment_insert_query = "INSERT INTO shipments (id, date, cargo_weight, distance_naut, duration_hours, average_speed, origin, destination, vessel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    shipment_insert_query = """
+    INSERT INTO shipments 
+    (id, date, cargo_weight, distance_naut, duration_hours, average_speed, origin, destination, vessel)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
     shipment_insert_data = [
         (
             shipment["tracking_number"],
-            shipment["date"],
+            shipment["date"].split("-")[2]
+            + "-"
+            + shipment["date"].split("-")[1]
+            + "-"
+            + shipment["date"].split("-")[0],
             shipment["cargo_weight"],
             shipment["distance_naut"],
             shipment["duration_hours"],
@@ -36,7 +44,11 @@ def fill_database(data: list):
     ]
 
     # Fill Vessel table
-    vessel_insert_query = "INSERT INTO vessels (imo, mmsi, name, country, type, build, gross, netto, length, beam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    vessel_insert_query = """
+                    INSERT INTO vessels
+                    (imo, mmsi, name, country, type, build, gross, netto, length, beam)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """
     vessel_insert_data = [
         (
             shipment["vessel"]["imo"],
